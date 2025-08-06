@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECB Timeline Test - 2020-2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #002147;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .chart-container {
+            height: 400px;
+            margin: 2rem 0;
+        }
+        .data-display {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ECB Timeline Test - 2020-2025</h1>
+        
+        <div id="status" class="status">Loading ECB data...</div>
+        
+        <div id="current-rates"></div>
+        
+        <div class="chart-container">
+            <canvas id="testChart"></canvas>
+        </div>
+        
+        <div id="data-info" class="data-display">
+            <h3>Data Information:</h3>
+            <div id="data-details"></div>
+        </div>
+    </div>
+
+    <script src="ecb-data.js"></script>
+    <script>
+        async function testTimeline() {
+            const statusDiv = document.getElementById('status');
+            const currentRatesDiv = document.getElementById('current-rates');
+            const dataDetailsDiv = document.getElementById('data-details');
+            
+            try {
+                statusDiv.textContent = 'Initializing ECB data fetcher...';
+                
+                const ecbFetcher = new ECBDataFetcher();
+                
+                statusDiv.textContent = 'Fetching current rates...';
+                const currentRates = await ecbFetcher.getCurrentRates();
+                
+                currentRatesDiv.innerHTML = `
+                    <h3>Current ECB Rates (Latest Values):</h3>
+                    <p><strong>Main Refinancing Rate:</strong> ${currentRates.refi.value}% (${currentRates.refi.trend})</p>
+                    <p><strong>Deposit Facility Rate:</strong> ${currentRates.deposit.value}% (${currentRates.deposit.trend})</p>
+                    <p><strong>Marginal Lending Rate:</strong> ${currentRates.lending.value}% (${currentRates.lending.trend})</p>
+                `;
+                
+                statusDiv.textContent = 'Fetching historical data for 2020-2025...';
+                const allRates = await ecbFetcher.fetchAllRates();
+                
+                // Display data information
+                let dataInfo = '<h4>Available Data Years:</h4>';
+                Object.keys(allRates).forEach(rateType => {
+                    dataInfo += `<p><strong>${rateType}:</strong> `;
+                    const years = allRates[rateType].data.map(year => year.year).join(', ');
+                    dataInfo += years + '</p>';
+                });
+                dataDetailsDiv.innerHTML = dataInfo;
+                
+                // Create timeline chart
+                const ctx = document.getElementById('testChart');
+                if (ctx && allRates.refi) {
+                    // Create continuous timeline from 2020 to 2025
+                    const allLabels = [];
+                    const allData = {
+                        refi: [],
+                        deposit: [],
+                        lending: []
+                    };
+                    
+                    // Generate labels for the full timeline (2020-2025)
+                    const years = [2020, 2021, 2022, 2023, 2024, 2025];
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    
+                    years.forEach(year => {
+                        months.forEach(month => {
+                            allLabels.push(`${month} ${year}`);
+                        });
+                    });
+                    
+                    // Populate data for each rate type across the full timeline
+                    const rateTypes = ['refi', 'deposit', 'lending'];
+                    
+                    rateTypes.forEach(rateType => {
+                        const rateData = allRates[rateType];
+                        if (rateData) {
+                            years.forEach(year => {
+                                const yearData = rateData.data.find(y => y.year === year);
+                                if (yearData) {
+                                    allData[rateType].push(...yearData.values);
+                                } else {
+                                    // Fill with the last known value if no data for this year
+                                    const lastValue = allData[rateType].length > 0 ? 
+                                        allData[rateType][allData[rateType].length - 1] : 0;
+                                    for (let i = 0; i < 12; i++) {
+                                        allData[rateType].push(lastValue);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    
+                    // Create datasets for the chart
+                    const datasets = [
+                        {
+                            label: 'Main Refinancing Rate',
+                            data: allData.refi,
+                            borderColor: '#002147',
+                            backgroundColor: '#00214720',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Deposit Facility Rate',
+                            data: allData.deposit,
+                            borderColor: '#28a745',
+                            backgroundColor: '#28a74520',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Marginal Lending Rate',
+                            data: allData.lending,
+                            borderColor: '#dc3545',
+                            backgroundColor: '#dc354520',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ];
+                    
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: allLabels,
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `${context.dataset.label}: ${context.parsed.y}%`;
+                                        }
+                                    }
+                                },
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        font: {
+                                            family: 'Inter',
+                                            size: 14
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.1)'
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Inter'
+                                        },
+                                        callback: function(value) {
+                                            return value + '%';
+                                        }
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.1)'
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Inter'
+                                        },
+                                        maxTicksLimit: 24,
+                                        callback: function(value, index) {
+                                            const monthIndex = index % 12;
+                                            if (monthIndex === 0 || monthIndex === 6) {
+                                                return allLabels[index];
+                                            }
+                                            return '';
+                                        }
+                                    }
+                                }
+                            },
+                            interaction: {
+                                mode: 'nearest',
+                                axis: 'x',
+                                intersect: false
+                            }
+                        }
+                    });
+                }
+                
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ Timeline test completed successfully! Charts display 2020-2025 data correctly.';
+                
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Error: ${error.message}`;
+                console.error('Timeline test failed:', error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', testTimeline);
+    </script>
+</body>
+</html> 

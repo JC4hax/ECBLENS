@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECB Rates - ECB Lens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <style>
+    .rates-hero {
+      background: linear-gradient(135deg, #002147 0%, #00366e 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .rates-hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .rates-hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .rates-grid {
+      max-width: 1200px;
+      margin: 3rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 0 2rem;
+    }
+
+    .rate-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .rate-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .rate-header {
+      background: #f8f9fa;
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .rate-value-large {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #002147;
+      margin-bottom: 0.5rem;
+    }
+
+    .rate-trend-large {
+      font-size: 1.1rem;
+      color: #28a745;
+      margin-bottom: 1rem;
+    }
+
+    .rate-trend-large.down {
+      color: #dc3545;
+    }
+
+    .rate-trend-large.up {
+      color: #28a745;
+    }
+
+    .rate-trend-large.neutral {
+      color: #6c757d;
+    }
+
+    .rate-body {
+      padding: 2rem;
+    }
+
+    .rate-description {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .rate-impact {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .rate-impact h4 {
+      color: #002147;
+      margin-bottom: 0.5rem;
+    }
+
+    .rate-impact ul {
+      margin: 0;
+      padding-left: 1.5rem;
+      color: #666;
+    }
+
+    .rate-impact li {
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-chart-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .modal-chart-title {
+      color: #002147;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .modal-chart-wrapper {
+      height: 400px;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .year-navigation {
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .year-navigation button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem;
+      background: #002147;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .year-navigation button:hover {
+      background: #00366e;
+    }
+
+    .year-navigation button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .year-display {
+      display: inline-block;
+      margin: 0 1rem;
+      font-weight: 600;
+      color: #002147;
+      font-size: 1.2rem;
+    }
+
+    .info-section {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .info-section h2 {
+      color: #002147;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-section p {
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .rates-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .rates-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .rate-value-large {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <h1 class="site-title">ECB Lens</h1>
+      <p class="site-subtitle">Making European Central Bank policy visual, simple, and interactive.</p>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+    <nav class="nav-menu" id="navMenu">
+      <a href="index.html">Home</a>
+      <a href="rates.html">Rates</a>
+      <a href="impact.html">Impact</a>
+      <a href="forecast.html">Forecast</a>
+      <a href="learn.html">Learn</a>
+    </nav>
+  </header>
+
+  <section class="rates-hero">
+    <h1>ECB Interest Rates</h1>
+    <p>Explore the three key interest rates that drive European monetary policy and understand how they affect the economy.</p>
+  </section>
+
+  <main>
+    <section class="rates-grid">
+      <div class="rate-card">
+        <div class="rate-header">
+          <h3>Main Refinancing Rate</h3>
+          <div class="rate-value-large">Loading...</div>
+          <div class="rate-trend-large">Loading...</div>
+        </div>
+        <div class="rate-body">
+          <p class="rate-description">
+            The interest rate on the main refinancing operations. In these operations banks can borrow funds from the ECB against broad collateral on a weekly basis at a pre-determined interest rate. The rate is set above the deposit facility rate.
+          </p>
+          <div class="rate-impact">
+            <h4>Economic Impact:</h4>
+            <ul>
+              <li>Influences mortgage and loan rates</li>
+              <li>Affects business borrowing costs</li>
+              <li>Controls inflation and economic growth</li>
+              <li>Sets the tone for financial markets</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-header">
+          <h3>Deposit Facility Rate</h3>
+          <div class="rate-value-large">Loading...</div>
+          <div class="rate-trend-large">Loading...</div>
+        </div>
+        <div class="rate-body">
+          <p class="rate-description">
+            The rate on the deposit facility, which banks may use to make overnight deposits with the Eurosystem at a pre-set interest rate. The Governing Council decided in March 2024 to continue to steer the monetary policy stance through this rate.
+          </p>
+          <div class="rate-impact">
+            <h4>Economic Impact:</h4>
+            <ul>
+              <li>Influences savings account rates</li>
+              <li>Affects money market rates</li>
+              <li>Controls excess liquidity</li>
+              <li>Sets minimum returns for banks</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-header">
+          <h3>Marginal Lending Rate</h3>
+          <div class="rate-value-large">Loading...</div>
+          <div class="rate-trend-large">Loading...</div>
+        </div>
+        <div class="rate-body">
+          <p class="rate-description">
+            The rate on the marginal lending facility, which offers overnight credit to banks against broad collateral at a pre-set interest rate. The rate is set above the main refinancing operations rate.
+          </p>
+          <div class="rate-impact">
+            <h4>Economic Impact:</h4>
+            <ul>
+              <li>Sets maximum borrowing costs</li>
+              <li>Influences emergency lending</li>
+              <li>Controls overnight rates</li>
+              <li>Affects interbank lending</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-section">
+      <h2>How ECB Rates Work</h2>
+      <p>
+        The European Central Bank uses these three interest rates to implement monetary policy and achieve its primary objective of price stability. The rates work together to create a corridor system that influences borrowing and lending throughout the euro area.
+      </p>
+      <p>
+        <strong>Main Refinancing Rate:</strong> This is the rate at which banks can borrow money from the ECB through regular refinancing operations. It's the most important rate as it influences the general level of interest rates in the economy.
+      </p>
+      <p>
+        <strong>Deposit Facility Rate:</strong> Banks can deposit excess reserves overnight at the ECB and earn this rate. It sets a floor for overnight interest rates and helps control excess liquidity in the banking system.
+      </p>
+      <p>
+        <strong>Marginal Lending Rate:</strong> Banks can borrow overnight from the ECB at this rate when they need emergency funding. It sets a ceiling for overnight interest rates and provides a safety net for the banking system.
+      </p>
+      <p>
+        The ECB Governing Council meets every six weeks to review and potentially adjust these rates based on economic conditions, inflation expectations, and growth prospects. Rate decisions are announced at 14:15 CET on the day of the meeting.
+      </p>
+    </section>
+    <section id="detailed-charts" style="max-width: 1200px; margin: 3rem auto 0 auto; padding: 2rem; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.10);">
+      <h2 style="text-align:center; margin-bottom:2rem;">Detailed ECB Rate Charts</h2>
+      <div style="margin-bottom: 3rem;">
+        <h3 style="text-align:center;">All ECB Policy Rates (1999-2025)</h3>
+        <div class="modal-chart-wrapper" style="height:400px;">
+          <canvas id="combinedRatesChart"></canvas>
+        </div>
+      </div>
+      <div style="margin-bottom: 3rem;">
+        <h3 style="text-align:center;">Main Refinancing Rate (Yearly)</h3>
+        <div class="modal-chart-container">
+          <div class="modal-chart-wrapper" style="height:350px;">
+            <canvas id="detailedRefiChart"></canvas>
+          </div>
+          <div class="year-navigation">
+            <button onclick="changeDetailedYear('refi', 'prev')" id="detailed-refi-prev">← Previous Year</button>
+            <span class="year-display" id="detailed-year-refi"></span>
+            <button onclick="changeDetailedYear('refi', 'next')" id="detailed-refi-next">Next Year →</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom: 3rem;">
+        <h3 style="text-align:center;">Deposit Facility Rate (Yearly)</h3>
+        <div class="modal-chart-container">
+          <div class="modal-chart-wrapper" style="height:350px;">
+            <canvas id="detailedDepositChart"></canvas>
+          </div>
+          <div class="year-navigation">
+            <button onclick="changeDetailedYear('deposit', 'prev')" id="detailed-deposit-prev">← Previous Year</button>
+            <span class="year-display" id="detailed-year-deposit"></span>
+            <button onclick="changeDetailedYear('deposit', 'next')" id="detailed-deposit-next">Next Year →</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="text-align:center;">Marginal Lending Rate (Yearly)</h3>
+        <div class="modal-chart-container">
+          <div class="modal-chart-wrapper" style="height:350px;">
+            <canvas id="detailedLendingChart"></canvas>
+          </div>
+          <div class="year-navigation">
+            <button onclick="changeDetailedYear('lending', 'prev')" id="detailed-lending-prev">← Previous Year</button>
+            <span class="year-display" id="detailed-year-lending"></span>
+            <button onclick="changeDetailedYear('lending', 'next')" id="detailed-lending-next">Next Year →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <h3>Created by Joshua</h3>
+    <p>Sources: European Central Bank</p>
+  </footer>
+
+  <script src="ecb-data.js"></script>
+  <script src="script.js"></script>
+  <script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('navMenu');
+    menu.classList.toggle('active');
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forecast Model - ECB Lens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .forecast-hero {
+      background: linear-gradient(135deg, #002147 0%, #00366e 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .forecast-hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .forecast-hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .forecast-container {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .forecast-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .input-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+    }
+
+    .input-panel h2 {
+      color: #002147;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #002147;
+      font-weight: 600;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e9ecef;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #002147;
+    }
+
+    .input-group .help-text {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+
+    .calculate-btn {
+      width: 100%;
+      padding: 1rem;
+      background: #002147;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .calculate-btn:hover {
+      background: #00366e;
+    }
+
+    .results-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+    }
+
+    .results-panel h2 {
+      color: #002147;
+      margin-bottom: 1.5rem;
+    }
+
+    .prediction-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .prediction-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #002147;
+      margin-bottom: 0.5rem;
+    }
+
+    .prediction-label {
+      color: #666;
+      font-size: 1rem;
+    }
+
+    .confidence-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .confidence-bar {
+      width: 200px;
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      margin: 0 1rem;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
+      transition: width 0.3s;
+    }
+
+    .confidence-text {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .factors-section {
+      margin-top: 2rem;
+    }
+
+    .factor-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .factor-item:last-child {
+      border-bottom: none;
+    }
+
+    .factor-name {
+      color: #002147;
+      font-weight: 600;
+    }
+
+    .factor-impact {
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .factor-impact.positive {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .factor-impact.negative {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .factor-impact.neutral {
+      background: #e2e3e5;
+      color: #383d41;
+    }
+
+    .chart-section {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .chart-title {
+      color: #002147;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .chart-wrapper {
+      height: 400px;
+      position: relative;
+    }
+
+    .info-section {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .info-section h2 {
+      color: #002147;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-section p {
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .disclaimer {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 2rem;
+      color: #856404;
+    }
+
+    @media (max-width: 768px) {
+      .forecast-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .forecast-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      
+      .prediction-value {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <h1 class="site-title">ECB Lens</h1>
+      <p class="site-subtitle">Making European Central Bank policy visual, simple, and interactive.</p>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="rates.html">Rates</a>
+      <a href="impact.html">Impact</a>
+      <a href="forecast.html">Forecast</a>
+      <a href="learn.html">Learn</a>
+    </nav>
+  </header>
+
+  <section class="forecast-hero">
+    <h1>Forecast Model</h1>
+    <p>Input key economic indicators and see how they might influence future ECB rate decisions.</p>
+  </section>
+
+  <main>
+    <section class="forecast-container">
+      <div class="forecast-grid">
+        <div class="input-panel">
+          <h2>Economic Indicators</h2>
+          <p style="color: #666; margin-bottom: 2rem;">Adjust these values to see how they affect ECB rate predictions.</p>
+          
+          <div class="input-group">
+            <label for="inflation">Inflation Rate (%)</label>
+            <input type="number" id="inflation" value="2.4" step="0.1" min="0" max="10">
+            <div class="help-text">Current euro area inflation rate. Higher inflation typically leads to rate hikes.</div>
+          </div>
+
+          <div class="input-group">
+            <label for="unemployment">Unemployment Rate (%)</label>
+            <input type="number" id="unemployment" value="6.5" step="0.1" min="0" max="20">
+            <div class="help-text">Euro area unemployment rate. Higher unemployment may lead to rate cuts.</div>
+          </div>
+
+          <div class="input-group">
+            <label for="gdpGrowth">GDP Growth Rate (%)</label>
+            <input type="number" id="gdpGrowth" value="0.8" step="0.1" min="-5" max="10">
+            <div class="help-text">Annual GDP growth rate. Strong growth may lead to rate hikes.</div>
+          </div>
+
+          <div class="input-group">
+            <label for="coreInflation">Core Inflation (%)</label>
+            <input type="number" id="coreInflation" value="2.1" step="0.1" min="0" max="10">
+            <div class="help-text">Core inflation (excluding energy and food). ECB closely monitors this.</div>
+          </div>
+
+          <div class="input-group">
+            <label for="wageGrowth">Wage Growth (%)</label>
+            <input type="number" id="wageGrowth" value="4.2" step="0.1" min="0" max="10">
+            <div class="help-text">Annual wage growth rate. High wage growth can drive inflation.</div>
+          </div>
+
+          <div class="input-group">
+            <label for="energyPrices">Energy Price Change (%)</label>
+            <input type="number" id="energyPrices" value="-2.1" step="0.1" min="-20" max="20">
+            <div class="help-text">Change in energy prices. Affects headline inflation.</div>
+          </div>
+
+          <button class="calculate-btn" onclick="calculateForecast()">Calculate Forecast</button>
+        </div>
+
+        <div class="results-panel">
+          <h2>Rate Prediction</h2>
+          <div id="predictionResults">
+            <div class="prediction-card">
+              <div class="prediction-value">4.25%</div>
+              <div class="prediction-label">Predicted Main Refinancing Rate</div>
+              <div class="confidence-indicator">
+                <span class="confidence-text">Low</span>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" style="width: 30%"></div>
+                </div>
+                <span class="confidence-text">High</span>
+              </div>
+            </div>
+
+            <div class="prediction-card">
+              <div class="prediction-value">No Change</div>
+              <div class="prediction-label">Next Meeting Decision</div>
+            </div>
+
+            <div class="factors-section">
+              <h3 style="color: #002147; margin-bottom: 1rem;">Key Factors</h3>
+              <div class="factor-item">
+                <span class="factor-name">Inflation Pressure</span>
+                <span class="factor-impact positive">Rate Hike</span>
+              </div>
+              <div class="factor-item">
+                <span class="factor-name">Economic Growth</span>
+                <span class="factor-impact neutral">Neutral</span>
+              </div>
+              <div class="factor-item">
+                <span class="factor-name">Labor Market</span>
+                <span class="factor-impact negative">Rate Cut</span>
+              </div>
+              <div class="factor-item">
+                <span class="factor-name">Wage Growth</span>
+                <span class="factor-impact positive">Rate Hike</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <h3 class="chart-title">Rate Forecast Timeline</h3>
+        <div class="chart-wrapper">
+          <canvas id="forecastChart"></canvas>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h2>How the Forecast Model Works</h2>
+        <p>
+          Our forecast model uses a simplified version of the economic indicators that the ECB Governing Council considers when making monetary policy decisions. The model weighs different factors based on their historical importance in ECB decision-making.
+        </p>
+        <p>
+          <strong>Inflation:</strong> The ECB's primary mandate is price stability, targeting inflation close to 2%. Higher inflation typically leads to rate hikes, while very low inflation may prompt rate cuts.
+        </p>
+        <p>
+          <strong>Economic Growth:</strong> Strong GDP growth can lead to inflationary pressures, while weak growth may justify accommodative monetary policy.
+        </p>
+        <p>
+          <strong>Unemployment:</strong> High unemployment suggests economic slack and may justify lower rates, while very low unemployment can signal inflationary pressures.
+        </p>
+        <p>
+          <strong>Core Inflation:</strong> The ECB pays special attention to core inflation (excluding volatile energy and food prices) as it better reflects underlying price trends.
+        </p>
+        <p>
+          <strong>Wage Growth:</strong> Strong wage growth can signal future inflationary pressures, while weak wage growth may indicate economic weakness.
+        </p>
+        <p>
+          <strong>Energy Prices:</strong> While volatile, energy price changes affect headline inflation and can influence short-term rate decisions.
+        </p>
+        <div class="disclaimer">
+          <strong>Disclaimer:</strong> This is a simplified educational model and should not be used for investment decisions. Real ECB decisions involve many more factors and complex economic analysis. The actual ECB Governing Council considers additional factors including financial conditions, exchange rates, and forward-looking indicators.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <h3>Created by @ECB Lens 2025</h3>
+    <p>Built by students Joshua and Tristan.</p>
+  </footer>
+
+  <script>
+    let forecastChart = null;
+
+    function calculateForecast() {
+      // Get input values
+      const inflation = parseFloat(document.getElementById('inflation').value);
+      const unemployment = parseFloat(document.getElementById('unemployment').value);
+      const gdpGrowth = parseFloat(document.getElementById('gdpGrowth').value);
+      const coreInflation = parseFloat(document.getElementById('coreInflation').value);
+      const wageGrowth = parseFloat(document.getElementById('wageGrowth').value);
+      const energyPrices = parseFloat(document.getElementById('energyPrices').value);
+
+      // Simple forecasting model
+      let rateChange = 0;
+      let confidence = 0.5;
+      let factors = [];
+
+      // Inflation impact (most important)
+      if (inflation > 2.5) {
+        rateChange += 0.25;
+        factors.push({ name: 'Inflation Pressure', impact: 'positive' });
+        confidence += 0.2;
+      } else if (inflation < 1.5) {
+        rateChange -= 0.25;
+        factors.push({ name: 'Inflation Pressure', impact: 'negative' });
+        confidence += 0.2;
+      } else {
+        factors.push({ name: 'Inflation Pressure', impact: 'neutral' });
+      }
+
+      // Unemployment impact
+      if (unemployment > 7) {
+        rateChange -= 0.25;
+        factors.push({ name: 'Labor Market', impact: 'negative' });
+        confidence += 0.1;
+      } else if (unemployment < 5) {
+        rateChange += 0.25;
+        factors.push({ name: 'Labor Market', impact: 'positive' });
+        confidence += 0.1;
+      } else {
+        factors.push({ name: 'Labor Market', impact: 'neutral' });
+      }
+
+      // GDP growth impact
+      if (gdpGrowth > 1.5) {
+        rateChange += 0.25;
+        factors.push({ name: 'Economic Growth', impact: 'positive' });
+        confidence += 0.1;
+      } else if (gdpGrowth < 0.5) {
+        rateChange -= 0.25;
+        factors.push({ name: 'Economic Growth', impact: 'negative' });
+        confidence += 0.1;
+      } else {
+        factors.push({ name: 'Economic Growth', impact: 'neutral' });
+      }
+
+      // Core inflation impact
+      if (coreInflation > 2.2) {
+        rateChange += 0.25;
+        confidence += 0.15;
+      } else if (coreInflation < 1.8) {
+        rateChange -= 0.25;
+        confidence += 0.15;
+      }
+
+      // Wage growth impact
+      if (wageGrowth > 4.5) {
+        rateChange += 0.25;
+        factors.push({ name: 'Wage Growth', impact: 'positive' });
+        confidence += 0.1;
+      } else if (wageGrowth < 3.5) {
+        rateChange -= 0.25;
+        factors.push({ name: 'Wage Growth', impact: 'negative' });
+        confidence += 0.1;
+      } else {
+        factors.push({ name: 'Wage Growth', impact: 'neutral' });
+      }
+
+      // Energy prices impact (smaller)
+      if (energyPrices > 5) {
+        rateChange += 0.125;
+        confidence += 0.05;
+      } else if (energyPrices < -5) {
+        rateChange -= 0.125;
+        confidence += 0.05;
+      }
+
+      // Calculate new rate (starting from current 4.25%)
+      const currentRate = 4.25;
+      const newRate = Math.max(0, currentRate + rateChange);
+      
+      // Determine decision
+      let decision = 'No Change';
+      if (rateChange > 0.125) {
+        decision = 'Rate Hike (+0.25%)';
+      } else if (rateChange < -0.125) {
+        decision = 'Rate Cut (-0.25%)';
+      }
+
+      // Update results
+      document.querySelector('.prediction-value').textContent = newRate.toFixed(2) + '%';
+      document.querySelector('.prediction-card:nth-child(2) .prediction-value').textContent = decision;
+      
+      // Update confidence bar
+      const confidenceFill = document.querySelector('.confidence-fill');
+      confidenceFill.style.width = Math.min(100, Math.max(10, confidence * 100)) + '%';
+
+      // Update factors
+      const factorsSection = document.querySelector('.factors-section');
+      factorsSection.innerHTML = '<h3 style="color: #002147; margin-bottom: 1rem;">Key Factors</h3>';
+      
+      factors.forEach(factor => {
+        const factorItem = document.createElement('div');
+        factorItem.className = 'factor-item';
+        factorItem.innerHTML = `
+          <span class="factor-name">${factor.name}</span>
+          <span class="factor-impact ${factor.impact}">${factor.impact === 'positive' ? 'Rate Hike' : factor.impact === 'negative' ? 'Rate Cut' : 'Neutral'}</span>
+        `;
+        factorsSection.appendChild(factorItem);
+      });
+
+      // Update chart
+      updateForecastChart(newRate, currentRate);
+    }
+
+    function updateForecastChart(newRate, currentRate) {
+      const ctx = document.getElementById('forecastChart');
+      if (!ctx) return;
+
+      if (forecastChart) {
+        forecastChart.destroy();
+      }
+
+      forecastChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Current', 'Next Meeting', '3 Months', '6 Months', '12 Months'],
+          datasets: [
+            {
+              label: 'Main Refinancing Rate',
+              data: [currentRate, newRate, newRate + (newRate - currentRate) * 0.5, newRate + (newRate - currentRate), newRate + (newRate - currentRate) * 1.5],
+              borderColor: '#002147',
+              backgroundColor: 'rgba(0, 33, 71, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      calculateForecast();
+    });
+  </script>
+</body>
+</html>
+
+
+
+

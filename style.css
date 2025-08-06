@@ -1,0 +1,432 @@
+/* style.css — ECB Lens (Bocconi-style theme) */
+
+/* Hide obsolete Rate Change Impact Calculator */
+.rate-change-demo{display:none!important;}
+
+/* Mobile-friendly Navigation */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Mobile Navigation Styles */
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #002147;
+    flex-direction: column;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .nav-menu.active {
+    display: flex;
+  }
+  
+  .nav-menu a {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .nav-menu a:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Enhanced Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Header adjustments */
+  header.site-header {
+    position: relative;
+    padding: 1rem;
+  }
+  
+  .site-title {
+    font-size: 1.4rem;
+  }
+  
+  .site-subtitle {
+    font-size: 0.85rem;
+  }
+  
+  /* Hero sections */
+  .hero h1, .rates-hero h1, .impact-hero h1 {
+    font-size: 2rem !important;
+  }
+  
+  .hero p, .rates-hero p, .impact-hero p {
+    font-size: 1rem !important;
+  }
+  
+  .hero, .rates-hero, .impact-hero {
+    padding: 2rem 1rem !important;
+  }
+  
+  /* Grid layouts */
+  .rates-section, .rates-grid, .impact-grid, .card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding: 0 1rem !important;
+  }
+  
+  /* Rate boxes and cards */
+  .rate-box, .rate-card, .impact-card, .card-box {
+    margin-bottom: 1rem;
+  }
+  
+  .rate-value {
+    font-size: 1.8rem !important;
+  }
+  
+  .rate-value-large {
+    font-size: 2rem !important;
+  }
+  
+  /* Form controls - Loan calculator */
+  .demo-controls {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  
+  .demo-control {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+  
+  .demo-control input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .demo-control button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .demo-results {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  /* Charts */
+  .modal-chart-wrapper, #detailed-charts .modal-chart-wrapper {
+    height: 300px !important;
+    padding: 1rem !important;
+  }
+  
+  .modal-content {
+    width: 95% !important;
+    padding: 1.5rem !important;
+    margin: 1rem;
+  }
+  
+  /* Text adjustments */
+  main {
+    padding: 1rem !important;
+  }
+  
+  .who-we-are, .info-section {
+    padding: 0 1rem !important;
+  }
+  
+  .timeline-item {
+    padding-left: 2rem !important;
+  }
+  
+  /* Detailed charts section */
+  #detailed-charts {
+    padding: 2rem 1rem !important;
+  }
+  
+  #detailed-charts h2, #detailed-charts h3 {
+    font-size: 1.5rem !important;
+  }
+  
+  /* Year navigation */
+  .year-navigation {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .year-navigation button {
+    margin: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .hero h1, .rates-hero h1, .impact-hero h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  .rate-value {
+    font-size: 1.5rem !important;
+  }
+  
+  .rate-value-large {
+    font-size: 1.75rem !important;
+  }
+  
+  .demo-results {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .modal-chart-wrapper, #detailed-charts .modal-chart-wrapper {
+    height: 250px !important;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #1c1c1c;
+  margin: 0;
+  padding: 0;
+}
+
+header.site-header {
+  background-color: #002147;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.site-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.site-subtitle {
+  font-size: 1rem;
+  margin: 0.2rem 0 0;
+  color: #bfc9d4;
+}
+
+nav a {
+  color: #fff;
+  margin-left: 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+nav a:hover {
+  color: #66a6ff;
+}
+
+main {
+  padding: 2rem;
+}
+
+.rates-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.rate-box {
+  background: #f4f7fa;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.rate-box:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.rate-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #002147;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.card-box {
+  background: #f4f7fa;
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  text-align: left;
+}
+
+.card-box h3 {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #002147;
+}
+
+.card-box p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.who-we-are {
+  margin-top: 4rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+footer.site-footer {
+  background-color: #002147;
+  color: #fff;
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+}
+
+.modal-chart-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  padding: 2rem 1.5rem;
+  margin: 0 auto 2rem auto;
+  max-width: 600px;
+  width: 100%;
+}
+
+.modal-chart-wrapper {
+  height: 400px;
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto 2rem auto;
+  background: #f8f9fa;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-chart-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.modal-content {
+  margin: 0 auto;
+  /* Remove any left/right/top/bottom offsets if present */
+}
+
+#detailed-charts {
+  max-width: 1400px;
+  margin: 4rem auto 0 auto;
+  padding: 3rem 2rem;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+#detailed-charts .modal-chart-wrapper {
+  height: 500px;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto 2.5rem auto;
+  background: #f8f9fa;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#detailed-charts canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.rates-grid .rate-card {
+  background: #e6ecf5;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+.rates-grid .rate-header,
+.rates-grid .rate-header h3,
+.rates-grid .rate-value-large,
+.rates-grid .rate-trend-large {
+  background: transparent;
+  color: #002147;
+}
+.rates-grid .rate-header h3 {
+  color: #002147;
+}
+.rates-grid .rate-value-large {
+  color: #002147;
+}
+.rates-grid .rate-trend-large {
+  color: #28a745;
+}
+.rates-grid .rate-impact {
+  background: #e6ecf5;
+  color: #002147;
+  box-shadow: 0 2px 8px rgba(100,110,120,0.10);
+}
+
+
+

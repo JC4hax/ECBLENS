@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Economic Impact - ECB Lens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .impact-hero {
+      background: linear-gradient(135deg, #002147 0%, #00366e 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .impact-hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .impact-hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .impact-grid {
+      max-width: 1200px;
+      margin: 3rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 0 2rem;
+    }
+
+    .impact-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .impact-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .impact-header {
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .impact-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .impact-title {
+      color: #002147;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .impact-subtitle {
+      color: #666;
+      font-size: 1rem;
+    }
+
+    .impact-body {
+      padding: 2rem;
+    }
+
+    .impact-description {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .impact-effects {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .impact-effects h4 {
+      color: #002147;
+      margin-bottom: 0.5rem;
+    }
+
+    .impact-effects ul {
+      margin: 0;
+      padding-left: 1.5rem;
+      color: #666;
+    }
+
+    .impact-effects li {
+      margin-bottom: 0.5rem;
+    }
+
+    .rate-change-demo {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .demo-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+    }
+
+    .demo-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .demo-control {
+      text-align: center;
+    }
+
+    .demo-control label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #002147;
+      font-weight: 600;
+    }
+
+    .demo-control input {
+      padding: 0.5rem;
+      border: 2px solid #e9ecef;
+      border-radius: 4px;
+      font-size: 1rem;
+      width: 100px;
+    }
+
+    .demo-control button {
+      padding: 0.5rem 1rem;
+      background: #002147;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0 0.5rem;
+    }
+
+    .demo-control button:hover {
+      background: #00366e;
+    }
+
+    .demo-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .result-item {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .result-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #002147;
+    }
+
+    .result-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .info-section {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .info-section h2 {
+      color: #002147;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-section p {
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .timeline {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .timeline-item {
+      display: flex;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+
+    .timeline-marker {
+      width: 20px;
+      height: 20px;
+      background: #002147;
+      border-radius: 50%;
+      margin-right: 1rem;
+      margin-top: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-title {
+      color: #002147;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-description {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .impact-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .impact-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .demo-controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <h1 class="site-title">ECB Lens</h1>
+      <p class="site-subtitle">Making European Central Bank policy visual, simple, and interactive.</p>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+    <nav class="nav-menu" id="navMenu">
+      <a href="index.html">Home</a>
+      <a href="rates.html">Rates</a>
+      <a href="impact.html">Impact</a>
+      <a href="forecast.html">Forecast</a>
+      <a href="learn.html">Learn</a>
+    </nav>
+  </header>
+
+  <section class="impact-hero">
+    <h1>Economic Impact</h1>
+    <p>Discover how ECB interest rate changes affect your daily life, from mortgages to savings accounts.</p>
+  </section>
+
+  <main>
+    <!-- Loan Calculator Section -->
+    <section class="loan-calculator" style="max-width: 1200px; margin: 3rem auto; padding: 0 2rem;">
+      <div class="demo-container">
+        <h2 style="text-align:center;color:#002147;margin-bottom:2rem;">Loan Calculator</h2>
+        <div class="demo-controls">
+          <div class="demo-control">
+            <label>Loan Amount (€)</label>
+            <input type="number" id="loanPrincipal" value="250000" step="10000">
+          </div>
+          <div class="demo-control">
+            <label>Loan Term (years)</label>
+            <input type="number" id="loanTermYears" value="30" step="1">
+          </div>
+          <div class="demo-control">
+            <label>Bank Margin (%)</label>
+            <input type="number" id="bankMargin" value="1.50" step="0.10">
+          </div>
+          <div class="demo-control" style="display:flex;flex-direction:column;align-items:center;">
+            <label>ECB Rate (%)</label>
+            <input type="number" id="ecbRateInput" value="2.15" step="0.05" style="margin-bottom:0.4rem;">
+            <button type="button" onclick="fillCurrentECBRate()" style="padding:0.4rem 0.8rem;font-size:0.85rem;">Current</button>
+          </div>
+          <div class="demo-control">
+            <button onclick="calculateLoan()">Calculate Loan</button>
+          </div>
+        </div>
+        <div class="demo-results" id="loanResults" style="margin-top:1.5rem;">
+          <div class="result-item">
+            <div class="result-value" id="monthlyPaymentLoan">€0</div>
+            <div class="result-label">Monthly Payment</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value" id="totalPaidLoan">€0</div>
+            <div class="result-label">Total Paid</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value" id="totalInterestLoan">€0</div>
+            <div class="result-label">Total Interest</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value" id="bankInterestLoan">€0</div>
+            <div class="result-label">Interest to Bank</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value" id="ecbInterestLoan">€0</div>
+            <div class="result-label">Interest to ECB</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-header">
+          <div class="impact-icon">🏠</div>
+          <h3 class="impact-title">Housing & Mortgages</h3>
+          <p class="impact-subtitle">How rate changes affect home buying and mortgages</p>
+        </div>
+        <div class="impact-body">
+          <p class="impact-description">
+            ECB rate changes directly influence mortgage rates across the euro area. When rates rise, borrowing becomes more expensive, affecting both new home buyers and existing mortgage holders.
+          </p>
+          <div class="impact-effects">
+            <h4>Rate Hike Effects:</h4>
+            <ul>
+              <li>Higher monthly mortgage payments</li>
+              <li>Reduced home affordability</li>
+              <li>Slower housing market activity</li>
+              <li>Increased refinancing costs</li>
+            </ul>
+          </div>
+          <div class="impact-effects">
+            <h4>Rate Cut Effects:</h4>
+            <ul>
+              <li>Lower monthly mortgage payments</li>
+              <li>Improved home affordability</li>
+              <li>Increased housing market activity</li>
+              <li>Better refinancing opportunities</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="impact-header">
+          <div class="impact-icon">💰</div>
+          <h3 class="impact-title">Savings & Investments</h3>
+          <p class="impact-subtitle">How rate changes affect your savings and investment returns</p>
+        </div>
+        <div class="impact-body">
+          <p class="impact-description">
+            Interest rates influence the returns on savings accounts, bonds, and other fixed-income investments. Higher rates generally mean better returns for savers.
+          </p>
+          <div class="impact-effects">
+            <h4>Rate Hike Effects:</h4>
+            <ul>
+              <li>Higher savings account interest</li>
+              <li>Better bond yields</li>
+              <li>Increased fixed-income returns</li>
+              <li>More attractive conservative investments</li>
+            </ul>
+          </div>
+          <div class="impact-effects">
+            <h4>Rate Cut Effects:</h4>
+            <ul>
+              <li>Lower savings account interest</li>
+              <li>Reduced bond yields</li>
+              <li>Decreased fixed-income returns</li>
+              <li>Shift toward riskier investments</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="impact-header">
+          <div class="impact-icon">🏢</div>
+          <h3 class="impact-title">Business & Economy</h3>
+          <p class="impact-subtitle">How rate changes affect businesses and economic growth</p>
+        </div>
+        <div class="impact-body">
+          <p class="impact-description">
+            Business borrowing costs, investment decisions, and economic growth are all influenced by ECB interest rates. These changes ripple through the entire economy.
+          </p>
+          <div class="impact-effects">
+            <h4>Rate Hike Effects:</h4>
+            <ul>
+              <li>Higher business borrowing costs</li>
+              <li>Reduced business investment</li>
+              <li>Slower economic growth</li>
+              <li>Lower inflation pressure</li>
+            </ul>
+          </div>
+          <div class="impact-effects">
+            <h4>Rate Cut Effects:</h4>
+            <ul>
+              <li>Lower business borrowing costs</li>
+              <li>Increased business investment</li>
+              <li>Faster economic growth</li>
+              <li>Higher inflation pressure</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="impact-header">
+          <div class="impact-icon">💳</div>
+          <h3 class="impact-title">Consumer Credit</h3>
+          <p class="impact-subtitle">How rate changes affect credit cards and personal loans</p>
+        </div>
+        <div class="impact-body">
+          <p class="impact-description">
+            Credit card rates, personal loans, and other consumer credit products are directly affected by ECB rate changes, impacting household budgets and spending.
+          </p>
+          <div class="impact-effects">
+            <h4>Rate Hike Effects:</h4>
+            <ul>
+              <li>Higher credit card interest rates</li>
+              <li>More expensive personal loans</li>
+              <li>Reduced consumer spending</li>
+              <li>Higher debt servicing costs</li>
+            </ul>
+          </div>
+          <div class="impact-effects">
+            <h4>Rate Cut Effects:</h4>
+            <ul>
+              <li>Lower credit card interest rates</li>
+              <li>Cheaper personal loans</li>
+              <li>Increased consumer spending</li>
+              <li>Lower debt servicing costs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="impact-header">
+          <div class="impact-icon">📈</div>
+          <h3 class="impact-title">Financial Markets</h3>
+          <p class="impact-subtitle">How rate changes affect stock markets and currencies</p>
+        </div>
+        <div class="impact-body">
+          <p class="impact-description">
+            ECB rate decisions have immediate and long-term effects on financial markets, influencing stock prices, currency values, and investor sentiment.
+          </p>
+          <div class="impact-effects">
+            <h4>Rate Hike Effects:</h4>
+            <ul>
+              <li>Stronger euro currency</li>
+              <li>Potential stock market volatility</li>
+              <li>Higher bond yields</li>
+              <li>Reduced risk appetite</li>
+            </ul>
+          </div>
+          <div class="impact-effects">
+            <h4>Rate Cut Effects:</h4>
+            <ul>
+              <li>Weaker euro currency</li>
+              <li>Potential stock market gains</li>
+              <li>Lower bond yields</li>
+              <li>Increased risk appetite</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="impact-header">
+          <div class="impact-icon">🌍</div>
+          <h3 class="impact-title">Inflation & Prices</h3>
+          <p class="impact-subtitle">How rate changes affect inflation and consumer prices</p>
+        </div>
+        <div class="impact-body">
+          <p class="impact-description">
+            The ECB's primary mandate is price stability. Rate changes are designed to control inflation and maintain stable prices across the euro area.
+          </p>
+          <div class="impact-effects">
+            <h4>Rate Hike Effects:</h4>
+            <ul>
+              <li>Lower inflation pressure</li>
+              <li>Reduced consumer spending</li>
+              <li>Stronger purchasing power</li>
+              <li>More stable prices</li>
+            </ul>
+          </div>
+          <div class="impact-effects">
+            <h4>Rate Cut Effects:</h4>
+            <ul>
+              <li>Higher inflation pressure</li>
+              <li>Increased consumer spending</li>
+              <li>Weaker purchasing power</li>
+              <li>Potential price increases</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rate-change-demo">
+      <div class="demo-container">
+        <h2 style="text-align: center; color: #002147; margin-bottom: 2rem;">Rate Change Impact Calculator</h2>
+        <div class="demo-controls">
+          <div class="demo-control">
+            <label>Current Rate (%)</label>
+            <input type="number" id="currentRate" value="4.25" step="0.25">
+          </div>
+          <div class="demo-control">
+            <label>Rate Change (%)</label>
+            <input type="number" id="rateChange" value="0.25" step="0.25">
+          </div>
+          <div class="demo-control">
+            <label>Loan Amount (€)</label>
+            <input type="number" id="loanAmount" value="250000" step="10000">
+          </div>
+          <div class="demo-control">
+            <button onclick="calculateImpact()">Calculate Impact</button>
+          </div>
+        </div>
+        <div class="demo-results" id="demoResults">
+          <div class="result-item">
+            <div class="result-value" id="newRate">4.50%</div>
+            <div class="result-label">New Rate</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value" id="monthlyPayment">€1,267</div>
+            <div class="result-label">Monthly Payment</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value" id="paymentChange">+€15</div>
+            <div class="result-label">Payment Change</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value" id="totalCost">€456,120</div>
+            <div class="result-label">Total Cost</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section class="timeline">
+      <h2 style="text-align: center; color: #002147; margin-bottom: 2rem;">How Rate Changes Spread Through the Economy</h2>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4 class="timeline-title">Immediate (Same Day)</h4>
+          <p class="timeline-description">Financial markets react immediately to ECB rate announcements. Stock prices, bond yields, and currency exchange rates adjust within minutes.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4 class="timeline-title">Short-term (1-3 Months)</h4>
+          <p class="timeline-description">Banks adjust their lending and deposit rates. Mortgage rates, credit card rates, and savings account rates begin to change.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4 class="timeline-title">Medium-term (3-12 Months)</h4>
+          <p class="timeline-description">Businesses and consumers adjust their spending and investment decisions based on the new rate environment.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4 class="timeline-title">Long-term (1-2 Years)</h4>
+          <p class="timeline-description">The full economic impact becomes visible in GDP growth, employment levels, and inflation rates across the euro area.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-section">
+      <h2>Understanding the Transmission Mechanism</h2>
+      <p>
+        The ECB's interest rate decisions don't affect the economy directly. Instead, they work through what economists call the "transmission mechanism" - a complex chain of reactions that spreads the effects throughout the financial system and real economy.
+      </p>
+      <p>
+        <strong>Banking Channel:</strong> When the ECB changes rates, commercial banks adjust their lending and deposit rates accordingly. This affects how much people and businesses can borrow and save.
+      </p>
+      <p>
+        <strong>Asset Price Channel:</strong> Rate changes influence the prices of stocks, bonds, and real estate. This affects household wealth and business investment decisions.
+      </p>
+      <p>
+        <strong>Exchange Rate Channel:</strong> Interest rate changes affect the value of the euro relative to other currencies, impacting exports, imports, and inflation.
+      </p>
+      <p>
+        <strong>Expectations Channel:</strong> Rate changes signal the ECB's view of the economy and inflation outlook, influencing consumer and business confidence and spending plans.
+      </p>
+      <p>
+        Understanding these channels helps explain why monetary policy takes time to work and why its effects can vary across different sectors and regions of the euro area.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <h3>Created by @ECB Lens 2025</h3>
+    <p>Built by students Joshua and Tristan.</p>
+  </footer>
+
+  <script src="ecb-data.js"></script>
+  <script>
+    function getLatestECBRate() {
+      if (!window.ecbData || !window.ecbData.refi) return 0;
+      const years = Object.keys(window.ecbData.refi).sort((a,b)=>b-a);
+      for (const y of years) {
+        const arr = window.ecbData.refi[y];
+        for (let i=arr.length-1;i>=0;i--) {
+          if (arr[i].value !== null && arr[i].value !== undefined) {
+            return arr[i].value;
+          }
+        }
+      }
+      return 0;
+    }
+
+    function fillCurrentECBRate() {
+      document.getElementById('ecbRateInput').value = getLatestECBRate().toFixed(2);
+    }
+
+    function calculateLoan() {
+      const principal = parseFloat(document.getElementById('loanPrincipal').value);
+      const years = parseFloat(document.getElementById('loanTermYears').value);
+      const bankMargin = parseFloat(document.getElementById('bankMargin').value);
+      const ecbRate = parseFloat(document.getElementById('ecbRateInput').value);
+      if (isNaN(principal)||isNaN(years)||isNaN(bankMargin)||isNaN(ecbRate)) return;
+      const totalRate = bankMargin + ecbRate;
+      const monthlyRate = totalRate/100/12;
+      const n = years*12;
+      const monthlyPayment = principal * (monthlyRate*Math.pow(1+monthlyRate,n))/(Math.pow(1+monthlyRate,n)-1);
+      const totalPaid = monthlyPayment*n;
+      const totalInterest = totalPaid - principal;
+      let bankInterestPaid = 0, ecbInterestPaid = 0;
+      if (totalRate>0) {
+        bankInterestPaid = totalInterest*(bankMargin/totalRate);
+        ecbInterestPaid = totalInterest*(ecbRate/totalRate);
+      }
+      // Update UI
+      document.getElementById('monthlyPaymentLoan').textContent = '€'+Math.round(monthlyPayment).toLocaleString();
+      document.getElementById('totalPaidLoan').textContent = '€'+Math.round(totalPaid).toLocaleString();
+      document.getElementById('totalInterestLoan').textContent = '€'+Math.round(totalInterest).toLocaleString();
+      document.getElementById('bankInterestLoan').textContent = '€'+Math.round(bankInterestPaid).toLocaleString();
+      document.getElementById('ecbInterestLoan').textContent = '€'+Math.round(ecbInterestPaid).toLocaleString();
+    }
+
+    function calculateImpact() {
+      const currentRate = parseFloat(document.getElementById('currentRate').value);
+      const rateChange = parseFloat(document.getElementById('rateChange').value);
+      const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+      
+      const newRate = currentRate + rateChange;
+      const loanTerm = 30; // 30 years
+      const monthlyRate = newRate / 100 / 12;
+      const numberOfPayments = loanTerm * 12;
+      
+      // Calculate monthly payment using mortgage formula
+      const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+      
+      // Calculate old payment for comparison
+      const oldMonthlyRate = currentRate / 100 / 12;
+      const oldMonthlyPayment = loanAmount * (oldMonthlyRate * Math.pow(1 + oldMonthlyRate, numberOfPayments)) / (Math.pow(1 + oldMonthlyRate, numberOfPayments) - 1);
+      
+      const paymentChange = monthlyPayment - oldMonthlyPayment;
+      const totalCost = monthlyPayment * numberOfPayments;
+      
+      // Update results
+      document.getElementById('newRate').textContent = newRate.toFixed(2) + '%';
+      document.getElementById('monthlyPayment').textContent = '€' + Math.round(monthlyPayment);
+      document.getElementById('paymentChange').textContent = (paymentChange > 0 ? '+' : '') + '€' + Math.round(paymentChange);
+      document.getElementById('totalCost').textContent = '€' + Math.round(totalCost).toLocaleString();
+      
+      // Color code the payment change
+      const paymentChangeElement = document.getElementById('paymentChange');
+      if (paymentChange > 0) {
+        paymentChangeElement.style.color = '#dc3545';
+      } else if (paymentChange < 0) {
+        paymentChangeElement.style.color = '#28a745';
+      } else {
+        paymentChangeElement.style.color = '#666';
+      }
+    }
+    
+    // Initialize calculator on page load
+    document.addEventListener('DOMContentLoaded', () => { calculateImpact(); fillCurrentECBRate(); calculateLoan(); });
+    
+    function toggleMobileMenu() {
+      const menu = document.getElementById('navMenu');
+      menu.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
+
+
+
+

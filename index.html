@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECB Lens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background-image: url('trading-banner.jpg.jpg');
+      background-color: #f0f0f0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .hero button {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background-color: #002147;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .hero button:hover {
+      background-color: #00366e;
+    }
+
+    .rates-section {
+      max-width: 1200px;
+      margin: 0 auto 3rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 0 2rem;
+    }
+
+    .rate-box {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .rate-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border-color: #002147;
+    }
+
+    .rate-box h3 {
+      color: #002147;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .rate-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #002147;
+      margin-bottom: 0.5rem;
+    }
+
+    .rate-trend {
+      font-size: 1.2rem;
+      color: #28a745;
+      transition: color 0.3s ease;
+    }
+
+    .rate-trend.up {
+      color: #28a745;
+    }
+
+    .rate-trend.down {
+      color: #dc3545;
+    }
+
+    .rate-trend.neutral {
+      color: #6c757d;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .modal-close:hover {
+      color: #000;
+    }
+
+    .chart-container {
+      height: 400px;
+      margin: 2rem 0;
+    }
+
+    .year-navigation {
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .year-navigation button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem;
+      background: #002147;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .year-navigation button:hover {
+      background: #00366e;
+    }
+
+    .year-navigation button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .year-display {
+      display: inline-block;
+      margin: 0 1rem;
+      font-weight: 600;
+      color: #002147;
+      font-size: 1.2rem;
+    }
+
+    .modal-chart-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .modal-chart-title {
+      color: #002147;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .modal-chart-wrapper {
+      height: 400px;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .card-grid {
+      max-width: 1200px;
+      margin: 0 auto 3rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 0 2rem;
+    }
+
+    .card-box {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .card-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border-color: #002147;
+    }
+
+    .card-box h3 {
+      color: #002147;
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+
+    .card-box p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .who-we-are {
+      margin-top: 4rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 2rem;
+    }
+
+    .who-we-are h2 {
+      color: #002147;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .who-we-are p {
+      line-height: 1.8;
+      color: #333;
+      text-align: justify;
+    }
+
+    .see-more-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background-color: #002147;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .see-more-btn:hover {
+      background-color: #00366e;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      .rates-section {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .card-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <h1 class="site-title">ECB Lens</h1>
+      <p class="site-subtitle">Making European Central Bank policy visual, simple, and interactive.</p>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+    <nav class="nav-menu" id="navMenu">
+      <a href="index.html">Home</a>
+      <a href="rates.html">Rates</a>
+      <a href="impact.html">Impact</a>
+      <a href="forecast.html">Forecast</a>
+      <a href="learn.html">Learn</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>ECB Lens</h1>
+      <p>Making European Central Bank monetary policy accessible, visual, and interactive</p>
+      <button onclick="document.getElementById('rates').scrollIntoView({behavior: 'smooth'})">Explore our website</button>
+    </div>
+  </section>
+
+  <main>
+    <section id="rates" class="rates-section">
+      <div class="rate-box" onclick="openModal('refi')">
+        <h3>Main Refinancing Rate</h3>
+        <div class="rate-value">Loading...</div>
+        <div class="rate-trend">Loading...</div>
+      </div>
+      <div class="rate-box" onclick="openModal('deposit')">
+        <h3>Deposit Facility Rate</h3>
+        <div class="rate-value">Loading...</div>
+        <div class="rate-trend">Loading...</div>
+      </div>
+      <div class="rate-box" onclick="openModal('lending')">
+        <h3>Marginal Lending Rate</h3>
+        <div class="rate-value">Loading...</div>
+        <div class="rate-trend">Loading...</div>
+      </div>
+    </section>
+
+    <section class="card-grid">
+      <div class="card-box" onclick="window.location.href='forecast.html'">
+        <h3>Forecast Model</h3>
+        <p>Enter key economic indicators and view predicted ECB rate changes. Simulate different scenarios to understand how inflation, unemployment, and GDP growth influence monetary policy decisions.</p>
+      </div>
+      <div class="card-box" onclick="window.location.href='impact.html'">
+        <h3>Impact on Economy</h3>
+        <p>Explore how ECB decisions influence inflation, loans, growth, and your daily financial decisions. Understand the real-world effects of rate hikes and cuts on borrowing, saving, and investment.</p>
+      </div>
+      <div class="card-box" onclick="window.location.href='learn.html'">
+        <h3>About Us</h3>
+        <p>Created by Joshua Choi and Tristan Chan, high school students with a passion for democratizing economics. Learn about our mission to make central bank policy accessible to everyone.</p>
+      </div>
+    </section>
+
+    <section class="who-we-are">
+      <h2>Who We Are</h2>
+      <p>Joshua Choi and Tristan Chan are two high school students who met at the Cité Scolaire Internationale de Lyon in Gerland, France. With a shared interest in economics and finance, they launched this platform to make complex financial topics more accessible to the public.</p>
+      <p>Their primary focus is on helping users better understand European Central Bank (ECB) interest rates—what drives them, how they evolve, and the broader impact they have on the European economy. By breaking down these concepts and offering clear, practical insights, Joshua and Tristan aim to equip individual borrowers and small business owners with the knowledge they need to make informed financial decisions and plan more effectively in a changing economic landscape.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <h3>Created by Joshua</h3>
+    <p>Sources: European Central Bank</p>
+  </footer>
+
+  <!-- Modals -->
+  <div class="modal" id="modal-refi">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('refi')">&times;</button>
+      <h2>Main Refinancing Rate - Historical Overview (1999-2025)</h2>
+      <div class="modal-chart-container">
+        <h3 class="modal-chart-title">Main Refinancing Rate - 1999 to 2025</h3>
+        <div class="modal-chart-wrapper">
+          <canvas id="chartRefi"></canvas>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <button class="see-more-btn" onclick="window.location.href='rates.html'">See More Detailed</button>
+        </div>
+      </div>
+      <p>The interest rate on the main refinancing operations. In these operations banks can borrow funds from the ECB against broad collateral on a weekly basis at a pre-determined interest rate. The rate is set above the deposit facility rate.</p>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-deposit">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('deposit')">&times;</button>
+      <h2>Deposit Facility Rate - Historical Overview (1999-2025)</h2>
+      <div class="modal-chart-container">
+        <h3 class="modal-chart-title">Deposit Facility Rate - 1999 to 2025</h3>
+        <div class="modal-chart-wrapper">
+          <canvas id="chartDeposit"></canvas>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <button class="see-more-btn" onclick="window.location.href='rates.html'">See More Detailed</button>
+        </div>
+      </div>
+      <p>The rate on the deposit facility, which banks may use to make overnight deposits with the Eurosystem at a pre-set interest rate. The Governing Council decided in March 2024 to continue to steer the monetary policy stance through this rate.</p>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-lending">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('lending')">&times;</button>
+      <h2>Marginal Lending Rate - Historical Overview (1999-2025)</h2>
+      <div class="modal-chart-container">
+        <h3 class="modal-chart-title">Marginal Lending Rate - 1999 to 2025</h3>
+        <div class="modal-chart-wrapper">
+          <canvas id="chartLending"></canvas>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <button class="see-more-btn" onclick="window.location.href='rates.html'">See More Detailed</button>
+        </div>
+      </div>
+      <p>The rate on the marginal lending facility, which offers overnight credit to banks against broad collateral at a pre-set interest rate. The rate is set above the main refinancing operations rate.</p>
+    </div>
+  </div>
+
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
+
+<script src="ecb-data.js"></script>
+<script src="script.js"></script>
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('navMenu');
+  menu.classList.toggle('active');
+}
+</script>
+
+

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Yearly Charts - ECB Lens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .test-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .test-button {
+      padding: 1rem 2rem;
+      margin: 1rem;
+      background: #002147;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+    
+    .test-button:hover {
+      background: #00366e;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>Test Yearly Charts</h1>
+    <p>This page tests the yearly chart functionality for the ECB rates modals.</p>
+    
+    <button class="test-button" onclick="testYearlyChart('refi')">Test Main Refinancing Rate (2025)</button>
+    <button class="test-button" onclick="testYearlyChart('deposit')">Test Deposit Facility Rate (2025)</button>
+    <button class="test-button" onclick="testYearlyChart('lending')">Test Marginal Lending Rate (2025)</button>
+    
+    <div id="test-results"></div>
+  </div>
+
+  <script src="ecb-data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    async function testYearlyChart(type) {
+      const resultsDiv = document.getElementById('test-results');
+      
+      try {
+        // Initialize data
+        await initializeECBData();
+        
+        // Test the yearly chart function
+        const testYear = 2025;
+        updateYearlyChart(`chart${type.charAt(0).toUpperCase() + type.slice(1)}`, type, testYear);
+        
+        resultsDiv.innerHTML = `
+          <div style="margin-top: 2rem; padding: 1rem; background: #d4edda; border-radius: 6px; color: #155724;">
+            ✅ Successfully tested ${type} chart for year ${testYear}
+          </div>
+        `;
+        
+      } catch (error) {
+        resultsDiv.innerHTML = `
+          <div style="margin-top: 2rem; padding: 1rem; background: #f8d7da; border-radius: 6px; color: #721c24;">
+            ❌ Error testing ${type} chart: ${error.message}
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html> 

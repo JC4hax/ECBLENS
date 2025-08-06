@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn - ECB Lens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .learn-hero {
+      background: linear-gradient(135deg, #002147 0%, #00366e 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .learn-hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .learn-hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .learn-container {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .learn-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .main-content {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+    }
+
+    .main-content h2 {
+      color: #002147;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
+
+    .main-content h3 {
+      color: #002147;
+      margin: 2rem 0 1rem 0;
+      font-size: 1.4rem;
+    }
+
+    .main-content p {
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .main-content ul {
+      margin: 1rem 0;
+      padding-left: 2rem;
+    }
+
+    .main-content li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .sidebar {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      height: fit-content;
+    }
+
+    .sidebar h3 {
+      color: #002147;
+      margin-bottom: 1rem;
+    }
+
+    .creator-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .creator-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #002147;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .creator-name {
+      font-weight: 600;
+      color: #002147;
+      margin-bottom: 0.5rem;
+    }
+
+    .creator-bio {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .timeline {
+      margin: 3rem 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+
+    .timeline-marker {
+      width: 20px;
+      height: 20px;
+      background: #002147;
+      border-radius: 50%;
+      margin-right: 1rem;
+      margin-top: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-title {
+      color: #002147;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-description {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .mission-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 3rem 0;
+    }
+
+    .mission-section h2 {
+      color: #002147;
+      margin-bottom: 1rem;
+    }
+
+    .mission-section p {
+      color: #333;
+      line-height: 1.8;
+    }
+
+    .faq-section {
+      margin: 3rem 0;
+    }
+
+    .faq-item {
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .faq-question {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      color: #002147;
+      border-bottom: 1px solid #e9ecef;
+      transition: background-color 0.3s;
+    }
+
+    .faq-question:hover {
+      background: #e9ecef;
+    }
+
+    .faq-answer {
+      padding: 1.5rem;
+      color: #666;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .faq-answer.active {
+      display: block;
+    }
+
+    .resources-section {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin: 3rem 0;
+    }
+
+    .resources-section h2 {
+      color: #002147;
+      margin-bottom: 1.5rem;
+    }
+
+    .resource-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .resource-item:last-child {
+      border-bottom: none;
+    }
+
+    .resource-icon {
+      width: 40px;
+      height: 40px;
+      background: #002147;
+      border-radius: 8px;
+      margin-right: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .resource-content {
+      flex: 1;
+    }
+
+    .resource-title {
+      font-weight: 600;
+      color: #002147;
+      margin-bottom: 0.25rem;
+    }
+
+    .resource-description {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .learn-hero h1 {
+        font-size: 2rem;
+      }
+      
+      .learn-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <h1 class="site-title">ECB Lens</h1>
+      <p class="site-subtitle">Making European Central Bank policy visual, simple, and interactive.</p>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="rates.html">Rates</a>
+      <a href="impact.html">Impact</a>
+      <a href="forecast.html">Forecast</a>
+      <a href="learn.html">Learn</a>
+    </nav>
+  </header>
+
+  <section class="learn-hero">
+    <h1>Learn About ECB</h1>
+    <p>Discover the European Central Bank, monetary policy, and the story behind ECB Lens.</p>
+  </section>
+
+  <main>
+    <section class="learn-container">
+      <div class="learn-grid">
+        <div class="main-content">
+          <h2>About the European Central Bank</h2>
+          <p>
+            The European Central Bank (ECB) is the central bank for the 20 European Union countries that have adopted the euro. Established in 1998, the ECB is headquartered in Frankfurt, Germany, and is one of the world's most important central banks.
+          </p>
+          
+          <h3>What is the ECB's Mission?</h3>
+          <p>
+            The ECB's primary objective is to maintain price stability in the euro area. This means keeping inflation close to, but below, 2% over the medium term. The ECB also supports the general economic policies of the European Union, including sustainable economic growth and high employment.
+          </p>
+
+          <h3>How Does the ECB Work?</h3>
+          <p>
+            The ECB operates through several key bodies:
+          </p>
+          <ul>
+            <li><strong>Governing Council:</strong> The main decision-making body, consisting of the six members of the Executive Board plus the governors of the national central banks of the 20 euro area countries.</li>
+            <li><strong>Executive Board:</strong> Comprises the President, Vice-President, and four other members appointed by the European Council.</li>
+            <li><strong>General Council:</strong> Includes the President and Vice-President of the ECB and the governors of all EU national central banks.</li>
+          </ul>
+
+          <h3>Monetary Policy Tools</h3>
+          <p>
+            The ECB uses several tools to implement monetary policy:
+          </p>
+          <ul>
+            <li><strong>Interest Rates:</strong> The three main rates (refinancing, deposit, and lending) that influence borrowing costs throughout the economy.</li>
+            <li><strong>Asset Purchases:</strong> Buying government bonds and other assets to inject money into the financial system.</li>
+            <li><strong>Forward Guidance:</strong> Communicating future policy intentions to influence market expectations.</li>
+            <li><strong>Long-term Refinancing Operations:</strong> Providing banks with long-term funding at favorable rates.</li>
+          </ul>
+
+          <h3>Decision-Making Process</h3>
+          <p>
+            The ECB Governing Council meets every six weeks to assess economic conditions and make monetary policy decisions. The process involves:
+          </p>
+          <ul>
+            <li>Analyzing economic data and inflation trends</li>
+            <li>Considering financial market conditions</li>
+            <li>Evaluating risks to price stability</li>
+            <li>Making decisions by majority vote</li>
+            <li>Communicating decisions and reasoning to the public</li>
+          </ul>
+
+          <div class="timeline">
+            <h3>Key ECB Milestones</h3>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4 class="timeline-title">1998 - ECB Founded</h4>
+                <p class="timeline-description">The European Central Bank was established in Frankfurt, Germany, as part of the European Monetary Union.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4 class="timeline-title">1999 - Euro Introduction</h4>
+                <p class="timeline-description">The euro was introduced as electronic currency, with the ECB taking responsibility for monetary policy.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4 class="timeline-title">2002 - Euro Banknotes</h4>
+                <p class="timeline-description">Euro banknotes and coins were introduced, replacing national currencies in participating countries.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4 class="timeline-title">2008-2014 - Financial Crisis</h4>
+                <p class="timeline-description">The ECB implemented unconventional monetary policy measures to address the financial crisis and subsequent euro area crisis.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4 class="timeline-title">2015-2022 - Quantitative Easing</h4>
+                <p class="timeline-description">The ECB launched large-scale asset purchase programs to stimulate the economy and raise inflation.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <h4 class="timeline-title">2022-Present - Rate Hiking Cycle</h4>
+                <p class="timeline-description">The ECB began raising interest rates to combat high inflation following the COVID-19 pandemic and energy crisis.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <h3>Meet the Creators</h3>
+          <div class="creator-card">
+            <div class="creator-avatar">J</div>
+            <div class="creator-name">Joshua Choi</div>
+            <div class="creator-bio">
+              High school student with a passion for economics and technology. Interested in making complex financial concepts accessible to everyone.
+            </div>
+          </div>
+          <div class="creator-card">
+            <div class="creator-avatar">T</div>
+            <div class="creator-name">Tristan Chan</div>
+            <div class="creator-bio">
+              High school student focused on data visualization and economic education. Believes in the power of clear communication in finance.
+            </div>
+          </div>
+
+          <h3 style="margin-top: 2rem;">Our Mission</h3>
+          <p style="color: #666; line-height: 1.6;">
+            We believe that understanding central bank policy shouldn't be limited to economists and financial professionals. By creating interactive, visual tools, we aim to democratize economic knowledge and help people make more informed financial decisions.
+          </p>
+        </div>
+      </div>
+
+      <div class="mission-section">
+        <h2>Why We Created ECB Lens</h2>
+        <p>
+          As high school students at the Cité Scolaire Internationale de Lyon, we noticed that many of our peers and families struggled to understand how ECB decisions affected their daily lives. Interest rate changes impact everything from mortgage payments to savings account returns, yet the connection often feels abstract and distant.
+        </p>
+        <p>
+          We created ECB Lens to bridge this gap. Our platform combines real-time data, interactive visualizations, and clear explanations to make European Central Bank policy accessible to students, young professionals, and small business owners who are directly affected by these decisions.
+        </p>
+        <p>
+          By breaking down complex monetary policy concepts and showing their real-world implications, we hope to empower people to make better financial decisions and engage more meaningfully with economic news and policy discussions.
+        </p>
+      </div>
+
+      <div class="faq-section">
+        <h2 style="color: #002147; margin-bottom: 1.5rem;">Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            What is the difference between the three ECB rates?
+          </div>
+          <div class="faq-answer">
+            The Main Refinancing Rate is the rate at which banks borrow from the ECB, the Deposit Facility Rate is what banks earn for depositing money overnight, and the Marginal Lending Rate is what banks pay for emergency overnight borrowing. Together, they create a corridor that influences all other interest rates in the economy.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How often does the ECB meet to make decisions?
+          </div>
+          <div class="faq-answer">
+            The ECB Governing Council meets every six weeks, typically on the first Thursday of each month. Rate decisions are announced at 14:15 CET on the day of the meeting, followed by a press conference with the ECB President.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            Why does the ECB target 2% inflation?
+          </div>
+          <div class="faq-answer">
+            The 2% target provides a buffer against deflation (falling prices) while being low enough to maintain price stability. This level allows for economic growth while preventing the harmful effects of high inflation on purchasing power and economic planning.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do ECB decisions affect me personally?
+          </div>
+          <div class="faq-answer">
+            ECB rate changes influence mortgage rates, savings account interest, credit card rates, and business borrowing costs. They also affect economic growth, employment, and inflation, which impact your job security and purchasing power.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            Is this website affiliated with the ECB?
+          </div>
+          <div class="faq-answer">
+            No, ECB Lens is an independent educational project created by students. We are not affiliated with the European Central Bank, though we strive to present accurate information about ECB policies and decisions.
+          </div>
+        </div>
+      </div>
+
+      <div class="resources-section">
+        <h2>Additional Resources</h2>
+        
+        <div class="resource-item">
+          <div class="resource-icon">🌐</div>
+          <div class="resource-content">
+            <div class="resource-title">ECB Official Website</div>
+            <div class="resource-description">Official ECB website with policy announcements, publications, and economic data.</div>
+          </div>
+        </div>
+
+        <div class="resource-item">
+          <div class="resource-icon">📊</div>
+          <div class="resource-content">
+            <div class="resource-title">Eurostat</div>
+            <div class="resource-description">European statistics agency providing economic data for the euro area.</div>
+          </div>
+        </div>
+
+        <div class="resource-item">
+          <div class="resource-icon">📰</div>
+          <div class="resource-content">
+            <div class="resource-title">ECB Press Conferences</div>
+            <div class="resource-description">Live and recorded press conferences following ECB meetings.</div>
+          </div>
+        </div>
+
+        <div class="resource-item">
+          <div class="resource-icon">📚</div>
+          <div class="resource-content">
+            <div class="resource-title">ECB Educational Materials</div>
+            <div class="resource-description">Educational resources and publications about monetary policy.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <h3>Created by @ECB Lens 2025</h3>
+    <p>Built by students Joshua and Tristan.</p>
+  </footer>
+
+  <script>
+    function toggleFAQ(element) {
+      const answer = element.nextElementSibling;
+      const isActive = answer.classList.contains('active');
+      
+      // Close all FAQ answers
+      document.querySelectorAll('.faq-answer').forEach(ans => {
+        ans.classList.remove('active');
+      });
+      
+      // Open clicked answer if it wasn't already open
+      if (!isActive) {
+        answer.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+
